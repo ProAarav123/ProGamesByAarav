@@ -1,18 +1,35 @@
 // script.js
 
-// Scores saved in localStorage
+// Scores saved in localStorage or initialized
 const scores = {
   clicker: parseInt(localStorage.getItem('clickerScore')) || 0,
   rps: parseInt(localStorage.getItem('rpsScore')) || 0,
+  memory: parseInt(localStorage.getItem('memoryBest')) || 0,
   dodger: parseInt(localStorage.getItem('dodgerScore')) || 0,
 };
 
-// DOM elements
+// Update stats display
+function updateStats() {
+  document.getElementById('stat-clicker').textContent = scores.clicker;
+  document.getElementById('stat-rps').textContent = scores.rps;
+  document.getElementById('stat-memory').textContent = scores.memory;
+  document.getElementById('stat-dodger').textContent = scores.dodger;
+}
+updateStats();
+
 const gameContainer = document.getElementById('game-container');
 
 function saveScore(game, score) {
-  localStorage.setItem(game + 'Score', score);
-  scores[game] = score;
+  if(game === 'memory') {
+    if(score > scores.memory) {
+      scores.memory = score;
+      localStorage.setItem('memoryBest', score);
+    }
+  } else {
+    localStorage.setItem(game + 'Score', score);
+    scores[game] = score;
+  }
+  updateStats();
 }
 
 function loadGame(name) {
@@ -93,44 +110,27 @@ function loadRPS() {
   });
 }
 
-// Memory Game
+// Memory Game - simple score shown only
 function loadMemory() {
   gameContainer.innerHTML = `
     <div class='game-box'>
       <h2>Memory Game</h2>
-      <p>Click the numbers in order!</p>
-      <div id='grid'></div>
+      <p>Your Best Score: <strong>${scores.memory}</strong></p>
+      <p>Try playing the actual memory game in the full version!</p>
     </div>`;
-  const grid = document.getElementById('grid');
-  let order = 1;
-  grid.innerHTML = '';
-  const nums = [...Array(16).keys()].map(x => x + 1);
-  nums.sort(() => Math.random() - 0.5);
-
-  nums.forEach(n => {
-    const btn = document.createElement('button');
-    btn.textContent = n;
-    btn.className = 'grid-btn';
-    btn.onclick = () => {
-      if (parseInt(btn.textContent) === order) {
-        btn.style.backgroundColor = '#27ae60'; // green
-        order++;
-        if (order > 16) alert('You completed the Memory Game!');
-      } else {
-        btn.style.backgroundColor = '#c0392b'; // red
-      }
-    };
-    grid.appendChild(btn);
-  });
 }
 
-// Dodger Game
+// Dodger Game with mobile-friendly buttons
 function loadDodger() {
   gameContainer.innerHTML = `
     <div class='game-box'>
       <h2>Dodger Game</h2>
-      <p>Use Left and Right arrow keys to dodge blocks.</p>
-      <canvas id='dodgerCanvas' width='300' height='400'></canvas>
+      <p>Use Left and Right arrow keys or buttons below to dodge blocks.</p>
+      <canvas id='dodgerCanvas' width='300' height='400' style='border-radius:12px; background:#111; display:block; margin: 0 auto;'></canvas>
+      <div style="margin-top:10px; display:flex; justify-content:center; gap:20px;">
+        <button id="leftBtn" class="main-btn" style="width:100px;">Left</button>
+        <button id="rightBtn" class="main-btn" style="width:100px;">Right</button>
+      </div>
       <p>Score: <span id='dodgerScore'>${scores.dodger}</span></p>
     </div>`;
 
@@ -179,15 +179,19 @@ function loadDodger() {
     requestAnimationFrame(draw);
   }
 
+  function moveLeft() {
+    if (player.x > 0) player.x -= 15;
+  }
+  function moveRight() {
+    if (player.x < 280) player.x += 15;
+  }
+
   document.addEventListener('keydown', e => {
     if (gameOver) return;
-    if (e.key === 'ArrowLeft' && player.x > 0) player.x -= 15;
-    if (e.key === 'ArrowRight' && player.x < 280) player.x += 15;
+    if (e.key === 'ArrowLeft') moveLeft();
+    if (e.key === 'ArrowRight') moveRight();
   });
 
-  enemies = [];
-  dodgerScore = 0;
-  scoreDisplay.textContent = dodgerScore;
-  setInterval(spawn, 1000);
-  draw();
-    }
+  // Mobile buttons
+  document.getElementById('leftBtn').onclick = () => { if(!gameOver) moveLeft(); };
+  document.getElementById('rightBtn
