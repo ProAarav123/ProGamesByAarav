@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,14 +14,19 @@
     <button class="main-btn" onclick="loadGame('memory')">Memory</button>
     <button class="main-btn" onclick="loadGame('dodger')">Dodger</button>
   </div>
+
   <div id="game-container">
-    <!-- Games will load here -->
+    <p style="text-align:center; font-size:1.3rem;">Choose any game above</p>
+  </div>
+
+  <div id="stats" style="max-width: 500px; margin: 0 auto; padding: 10px; text-align:center; background: rgba(255,255,255,0.1); border-radius:12px; color:#eee; font-size:1.1rem;">
+    <h3>Your Stats</h3>
+    <p>Clicker Score: <span id="stat-clicker">0</span></p>
+    <p>Rock Paper Scissors Score: <span id="stat-rps">0</span></p>
+    <p>Memory Best Score: <span id="stat-memory">0</span></p>
+    <p>Dodger Score: <span id="stat-dodger">0</span></p>
   </div>
 
   <script src="script.js"></script>
-  <script>
-    // Load Clicker game on start by default
-    window.onload = () => loadGame('clicker');
-  </script>
 </body>
 </html>
